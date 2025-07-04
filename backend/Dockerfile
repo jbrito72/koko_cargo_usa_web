@@ -20,23 +20,20 @@ ENV UV_COMPILE_BYTECODE=1
 # Ref: https://docs.astral.sh/uv/guides/integration/docker/#caching
 ENV UV_LINK_MODE=copy
 
-# Install dependencies
-# Ref: https://docs.astral.sh/uv/guides/integration/docker/#intermediate-layers
+# Copy dependency files
+COPY ./pyproject.toml ./uv.lock ./alembic.ini /app/
+
+# Install dependencies with cache mount (no bind mounts)
 RUN --mount=type=cache,id=s/e2f42c0c-a43e-4f7a-be68-3d776a107d62-/root/.cache/uv,target=/root/.cache/uv \
-    --mount=type=bind,source=uv.lock,target=uv.lock \
-    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     uv sync --frozen --no-install-project
 
 ENV PYTHONPATH=/app
 
 COPY ./scripts /app/scripts
 
-COPY ./pyproject.toml ./uv.lock ./alembic.ini /app/
-
 COPY ./app /app/app
 
-# Sync the project
-# Ref: https://docs.astral.sh/uv/guides/integration/docker/#intermediate-layers
+# Sync the project with cache mount
 RUN --mount=type=cache,id=s/e2f42c0c-a43e-4f7a-be68-3d776a107d62-/root/.cache/uv,target=/root/.cache/uv \
     uv sync
 
