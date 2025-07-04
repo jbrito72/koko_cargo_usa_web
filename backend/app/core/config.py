@@ -51,15 +51,31 @@ class Settings(BaseSettings):
 
     PROJECT_NAME: str
     SENTRY_DSN: HttpUrl | None = None
-    POSTGRES_SERVER: str
+    
+    # Single DATABASE_URL variable (preferred for Railway, Heroku, etc.)
+    DATABASE_URL: PostgresDsn | None = None
+    
+    # Individual PostgreSQL variables (for backwards compatibility)
+    POSTGRES_SERVER: str | None = None
     POSTGRES_PORT: int = 5432
-    POSTGRES_USER: str
+    POSTGRES_USER: str | None = None
     POSTGRES_PASSWORD: str = ""
     POSTGRES_DB: str = ""
 
     @computed_field  # type: ignore[prop-decorator]
     @property
     def SQLALCHEMY_DATABASE_URI(self) -> PostgresDsn:
+        if self.DATABASE_URL:
+            return self.DATABASE_URL
+        
+        # Fall back to individual variables for backwards compatibility
+        if not self.POSTGRES_SERVER:
+            raise ValueError("Either DATABASE_URL or POSTGRES_SERVER must be set")
+        if not self.POSTGRES_USER:
+            raise ValueError("Either DATABASE_URL or POSTGRES_USER must be set")
+        if not self.POSTGRES_DB:
+            raise ValueError("Either DATABASE_URL or POSTGRES_DB must be set")
+            
         return MultiHostUrl.build(
             scheme="postgresql+psycopg",
             username=self.POSTGRES_USER,
@@ -109,7 +125,11 @@ class Settings(BaseSettings):
     @model_validator(mode="after")
     def _enforce_non_default_secrets(self) -> Self:
         self._check_default_secret("SECRET_KEY", self.SECRET_KEY)
-        self._check_default_secret("POSTGRES_PASSWORD", self.POSTGRES_PASSWORD)
+        
+        # Only check POSTGRES_PASSWORD if using individual variables
+        if not self.DATABASE_URL:
+            self._check_default_secret("POSTGRES_PASSWORD", self.POSTGRES_PASSWORD)
+        
         self._check_default_secret(
             "FIRST_SUPERUSER_PASSWORD", self.FIRST_SUPERUSER_PASSWORD
         )
