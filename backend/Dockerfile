@@ -37,4 +37,8 @@ COPY ./app /app/app
 RUN --mount=type=cache,id=s/e2f42c0c-a43e-4f7a-be68-3d776a107d62-/root/.cache/uv,target=/root/.cache/uv \
     uv sync
 
-CMD ["fastapi", "run", "--workers", "4", "app/main.py"]
+# Make scripts executable
+RUN chmod +x /app/scripts/prestart.sh
+
+# Run migrations and start server
+CMD ["sh", "-c", "bash scripts/prestart.sh && fastapi run --workers 4 app/main.py"]
