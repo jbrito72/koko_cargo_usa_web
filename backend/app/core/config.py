@@ -66,7 +66,11 @@ class Settings(BaseSettings):
     @property
     def SQLALCHEMY_DATABASE_URI(self) -> PostgresDsn:
         if self.DATABASE_URL:
-            return self.DATABASE_URL
+            # Convert postgresql:// to postgresql+psycopg:// for psycopg v3
+            url_str = str(self.DATABASE_URL)
+            if url_str.startswith("postgresql://"):
+                url_str = url_str.replace("postgresql://", "postgresql+psycopg://", 1)
+            return PostgresDsn(url_str)
         
         # Fall back to individual variables for backwards compatibility
         if not self.POSTGRES_SERVER:
