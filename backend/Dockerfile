@@ -24,7 +24,7 @@ ENV UV_LINK_MODE=copy
 COPY ./pyproject.toml ./uv.lock ./alembic.ini /app/
 
 # Install dependencies with cache mount (no bind mounts)
-RUN --mount=type=cache,id=s/e2f42c0c-a43e-4f7a-be68-3d776a107d62-/root/.cache/uv,target=/root/.cache/uv \
+RUN --mount=type=cache,id=s/cbb42f24-bd0b-40e5-946f-8becad8a1a75-/root/.cache/uv,target=/root/.cache/uv \
     uv sync --frozen --no-install-project
 
 ENV PYTHONPATH=/app
@@ -34,7 +34,7 @@ COPY ./scripts /app/scripts
 COPY ./app /app/app
 
 # Sync the project with cache mount
-RUN --mount=type=cache,id=s/e2f42c0c-a43e-4f7a-be68-3d776a107d62-/root/.cache/uv,target=/root/.cache/uv \
+RUN --mount=type=cache,id=s/cbb42f24-bd0b-40e5-946f-8becad8a1a75-/root/.cache/uv,target=/root/.cache/uv \
     uv sync
 
 # Make scripts executable
