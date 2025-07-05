@@ -19,5 +19,11 @@ FROM nginx:1
 
 COPY --from=build-stage /app/dist/ /usr/share/nginx/html
 
-COPY ./nginx.conf /etc/nginx/conf.d/default.conf
+COPY ./nginx.conf /etc/nginx/templates/default.conf.template
 COPY ./nginx-backend-not-found.conf /etc/nginx/extra-conf.d/backend-not-found.conf
+
+# Set default PORT if not provided
+ENV PORT=80
+
+# Expose the port
+EXPOSE $PORT
