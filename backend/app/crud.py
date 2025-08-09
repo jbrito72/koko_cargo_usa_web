@@ -1,10 +1,9 @@
-import uuid
 from typing import Any
 
 from sqlmodel import Session, select
 
 from app.core.security import get_password_hash, verify_password
-from app.models import Item, ItemCreate, User, UserCreate, UserUpdate
+from app.models import User, UserCreate, UserUpdate
 
 
 def create_user(*, session: Session, user_create: UserCreate) -> User:
@@ -32,23 +31,38 @@ def update_user(*, session: Session, db_user: User, user_in: UserUpdate) -> Any:
 
 
 def get_user_by_email(*, session: Session, email: str) -> User | None:
-    statement = select(User).where(User.email == email)
+    """Get user by email, ID, or nombres (username)"""
+    # Check if input is a numeric ID
+    if email.isdigit():
+        statement = select(User).where(User.id == int(email))
+    else:
+        # Search by nombres (username)
+        statement = select(User).where(User.nombres == email)
+    
     session_user = session.exec(statement).first()
     return session_user
 
 
 def authenticate(*, session: Session, email: str, password: str) -> User | None:
+    """Authenticate user with ID/nombres and password (uses password_hash if exists)"""
     db_user = get_user_by_email(session=session, email=email)
     if not db_user:
         return None
-    if not verify_password(password, db_user.hashed_password):
-        return None
+    
+    # Check if password_hash exists (user has logged in before)
+    if db_user.password_hash:
+        # Use bcrypt verification with the hashed password
+        if not verify_password(password, db_user.password_hash):
+            return None
+    else:
+        # No hash yet, compare with plain text password
+        if password != db_user.password:
+            return None
+        # Generate and save hash for future logins (but keep original password intact)
+        db_user.password_hash = get_password_hash(password)
+        session.add(db_user)
+        session.commit()
+        session.refresh(db_user)
+        print(f"Password hash generated for user {db_user.nombres} (original password unchanged)")
+    
     return db_user
-
-
-def create_item(*, session: Session, item_in: ItemCreate, owner_id: uuid.UUID) -> Item:
-    db_item = Item.model_validate(item_in, update={"owner_id": owner_id})
-    session.add(db_item)
-    session.commit()
-    session.refresh(db_item)
-    return db_item

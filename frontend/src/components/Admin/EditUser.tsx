@@ -58,7 +58,7 @@ const EditUser = ({ user }: EditUserProps) => {
     mutationFn: (data: UserUpdateForm) =>
       UsersService.updateUser({ userId: user.id, requestBody: data }),
     onSuccess: () => {
-      showSuccessToast("User updated successfully.")
+      showSuccessToast("Usuario actualizado exitosamente.")
       reset()
       setIsOpen(false)
     },
@@ -87,30 +87,30 @@ const EditUser = ({ user }: EditUserProps) => {
       <DialogTrigger asChild>
         <Button variant="ghost" size="sm">
           <FaExchangeAlt fontSize="16px" />
-          Edit User
+          Editar Usuario
         </Button>
       </DialogTrigger>
       <DialogContent>
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader>
-            <DialogTitle>Edit User</DialogTitle>
+            <DialogTitle>Editar Usuario</DialogTitle>
           </DialogHeader>
           <DialogBody>
-            <Text mb={4}>Update the user details below.</Text>
+            <Text mb={4}>Actualice los detalles del usuario a continuación.</Text>
             <VStack gap={4}>
               <Field
                 required
                 invalid={!!errors.email}
                 errorText={errors.email?.message}
-                label="Email"
+                label="Correo Electrónico"
               >
                 <Input
                   id="email"
                   {...register("email", {
-                    required: "Email is required",
+                    required: "El correo electrónico es requerido",
                     pattern: emailPattern,
                   })}
-                  placeholder="Email"
+                  placeholder="Correo electrónico"
                   type="email"
                 />
               </Field>
@@ -118,12 +118,12 @@ const EditUser = ({ user }: EditUserProps) => {
               <Field
                 invalid={!!errors.full_name}
                 errorText={errors.full_name?.message}
-                label="Full Name"
+                label="Nombre Completo"
               >
                 <Input
                   id="name"
                   {...register("full_name")}
-                  placeholder="Full name"
+                  placeholder="Nombre completo"
                   type="text"
                 />
               </Field>
@@ -131,17 +131,17 @@ const EditUser = ({ user }: EditUserProps) => {
               <Field
                 invalid={!!errors.password}
                 errorText={errors.password?.message}
-                label="Set Password"
+                label="Establecer Contraseña"
               >
                 <Input
                   id="password"
                   {...register("password", {
                     minLength: {
                       value: 8,
-                      message: "Password must be at least 8 characters",
+                      message: "La contraseña debe tener al menos 8 caracteres",
                     },
                   })}
-                  placeholder="Password"
+                  placeholder="Contraseña"
                   type="password"
                 />
               </Field>
@@ -149,16 +149,16 @@ const EditUser = ({ user }: EditUserProps) => {
               <Field
                 invalid={!!errors.confirm_password}
                 errorText={errors.confirm_password?.message}
-                label="Confirm Password"
+                label="Confirmar Contraseña"
               >
                 <Input
                   id="confirm_password"
                   {...register("confirm_password", {
                     validate: (value) =>
                       value === getValues().password ||
-                      "The passwords do not match",
+                      "Las contraseñas no coinciden",
                   })}
-                  placeholder="Password"
+                  placeholder="Contraseña"
                   type="password"
                 />
               </Field>
@@ -174,7 +174,7 @@ const EditUser = ({ user }: EditUserProps) => {
                       checked={field.value}
                       onCheckedChange={({ checked }) => field.onChange(checked)}
                     >
-                      Is superuser?
+                      ¿Es superusuario?
                     </Checkbox>
                   </Field>
                 )}
@@ -188,7 +188,7 @@ const EditUser = ({ user }: EditUserProps) => {
                       checked={field.value}
                       onCheckedChange={({ checked }) => field.onChange(checked)}
                     >
-                      Is active?
+                      ¿Está activo?
                     </Checkbox>
                   </Field>
                 )}
@@ -203,11 +203,11 @@ const EditUser = ({ user }: EditUserProps) => {
                 colorPalette="gray"
                 disabled={isSubmitting}
               >
-                Cancel
+                Cancelar
               </Button>
             </DialogActionTrigger>
             <Button variant="solid" type="submit" loading={isSubmitting}>
-              Save
+              Guardar
             </Button>
           </DialogFooter>
           <DialogCloseTrigger />

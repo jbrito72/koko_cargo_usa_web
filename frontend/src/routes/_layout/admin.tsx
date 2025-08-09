@@ -6,7 +6,6 @@ import { z } from "zod"
 import { type UserPublic, UsersService } from "@/client"
 import AddUser from "@/components/Admin/AddUser"
 import { UserActionsMenu } from "@/components/Common/UserActionsMenu"
-import PendingUsers from "@/components/Pending/PendingUsers"
 import {
   PaginationItems,
   PaginationNextTrigger,
@@ -53,7 +52,7 @@ function UsersTable() {
   const count = data?.count ?? 0
 
   if (isLoading) {
-    return <PendingUsers />
+    return <Container>Cargando usuarios...</Container>
   }
 
   return (
@@ -61,21 +60,21 @@ function UsersTable() {
       <Table.Root size={{ base: "sm", md: "md" }}>
         <Table.Header>
           <Table.Row>
-            <Table.ColumnHeader w="sm">Full name</Table.ColumnHeader>
-            <Table.ColumnHeader w="sm">Email</Table.ColumnHeader>
-            <Table.ColumnHeader w="sm">Role</Table.ColumnHeader>
-            <Table.ColumnHeader w="sm">Status</Table.ColumnHeader>
-            <Table.ColumnHeader w="sm">Actions</Table.ColumnHeader>
+            <Table.ColumnHeader w="sm">Nombre Completo</Table.ColumnHeader>
+            <Table.ColumnHeader w="sm">Correo Electrónico</Table.ColumnHeader>
+            <Table.ColumnHeader w="sm">Rol</Table.ColumnHeader>
+            <Table.ColumnHeader w="sm">Estado</Table.ColumnHeader>
+            <Table.ColumnHeader w="sm">Acciones</Table.ColumnHeader>
           </Table.Row>
         </Table.Header>
         <Table.Body>
           {users?.map((user) => (
             <Table.Row key={user.id} opacity={isPlaceholderData ? 0.5 : 1}>
               <Table.Cell color={!user.full_name ? "gray" : "inherit"}>
-                {user.full_name || "N/A"}
+                {user.full_name || "No disponible"}
                 {currentUser?.id === user.id && (
                   <Badge ml="1" colorScheme="teal">
-                    You
+                    Tú
                   </Badge>
                 )}
               </Table.Cell>
@@ -83,9 +82,9 @@ function UsersTable() {
                 {user.email}
               </Table.Cell>
               <Table.Cell>
-                {user.is_superuser ? "Superuser" : "User"}
+                {user.is_superuser ? "Superusuario" : "Usuario"}
               </Table.Cell>
-              <Table.Cell>{user.is_active ? "Active" : "Inactive"}</Table.Cell>
+              <Table.Cell>{user.is_active ? "Activo" : "Inactivo"}</Table.Cell>
               <Table.Cell>
                 <UserActionsMenu
                   user={user}
@@ -117,7 +116,7 @@ function Admin() {
   return (
     <Container maxW="full">
       <Heading size="lg" pt={12}>
-        Users Management
+        Gestión de Usuarios
       </Heading>
 
       <AddUser />

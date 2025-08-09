@@ -38,7 +38,13 @@ def get_current_user(session: SessionDep, token: TokenDep) -> User:
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Could not validate credentials",
         )
-    user = session.get(User, token_data.sub)
+    # Convert sub to int for usuarios table ID
+    try:
+        user_id = int(token_data.sub) if token_data.sub else None
+    except (ValueError, TypeError):
+        raise HTTPException(status_code=404, detail="Invalid user ID in token")
+    
+    user = session.get(User, user_id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     if not user.is_active:

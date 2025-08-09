@@ -5,7 +5,7 @@ import {
   redirect,
 } from "@tanstack/react-router"
 import { type SubmitHandler, useForm } from "react-hook-form"
-import { FiLock, FiMail } from "react-icons/fi"
+import { FiLock, FiUser } from "react-icons/fi"
 
 import type { Body_login_login_access_token as AccessToken } from "@/client"
 import { Button } from "@/components/ui/button"
@@ -14,7 +14,7 @@ import { InputGroup } from "@/components/ui/input-group"
 import { PasswordInput } from "@/components/ui/password-input"
 import useAuth, { isLoggedIn } from "@/hooks/useAuth"
 import Logo from "/assets/images/fastapi-logo.svg"
-import { emailPattern, passwordRules } from "../utils"
+import { passwordRules } from "../utils"
 
 export const Route = createFileRoute("/login")({
   component: Login,
@@ -78,15 +78,18 @@ function Login() {
           invalid={!!errors.username}
           errorText={errors.username?.message || !!error}
         >
-          <InputGroup w="100%" startElement={<FiMail />}>
+          <InputGroup w="100%" startElement={<FiUser />}>
             <Input
               id="username"
               {...register("username", {
-                required: "Username is required",
-                pattern: emailPattern,
+                required: "Usuario o ID es requerido",
+                minLength: {
+                  value: 1,
+                  message: "Ingrese un ID válido o nombre de usuario",
+                },
               })}
-              placeholder="Email"
-              type="email"
+              placeholder="Usuario o ID"
+              type="text"
             />
           </InputGroup>
         </Field>
@@ -97,18 +100,9 @@ function Login() {
           placeholder="Password"
           errors={errors}
         />
-        <RouterLink to="/recover-password" className="main-link">
-          Forgot Password?
-        </RouterLink>
         <Button variant="solid" type="submit" loading={isSubmitting} size="md">
-          Log In
+          Iniciar Sesión
         </Button>
-        <Text>
-          Don't have an account?{" "}
-          <RouterLink to="/signup" className="main-link">
-            Sign Up
-          </RouterLink>
-        </Text>
       </Container>
     </>
   )

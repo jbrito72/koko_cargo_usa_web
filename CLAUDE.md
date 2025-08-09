@@ -12,6 +12,47 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 4. **Domain knowledge source** - For understanding shrimp production domain models and their relationships, PROJECT_INDEX.md contains the complete database schema documentation.
 
+## Language and Code Convention Rules
+
+### STRICT CODE LANGUAGE REQUIREMENTS
+
+1. **All code MUST be in English** - This is a non-negotiable requirement. ALL variable names, function names, class names, method names, constants, and any other code identifiers MUST be written in English.
+
+2. **Code comments in Spanish** - To help the Spanish-speaking developer understand the code, add concise Spanish comments explaining classes, methods, and complex logic. Keep comments brief and clear.
+
+3. **Frontend display text in Spanish** - All user-facing text in the frontend (labels, buttons, messages, titles, etc.) MUST be in Spanish. This includes:
+   - UI component labels and placeholders
+   - Error messages and notifications
+   - Navigation menu items
+   - Form field labels
+   - Button text
+   - Dialog titles and content
+
+4. **Database field names in English** - All database tables, columns, and field names remain in English as per best practices.
+
+5. **Comment guidelines**:
+   - Add a brief Spanish comment above each class explaining its purpose
+   - Add Spanish comments for complex business logic
+   - Keep comments concise (1-2 lines maximum)
+   - Example:
+   ```python
+   # Clase para manejar las liquidaciones de camarón
+   class ShrimpSettlement:
+       # Calcula el precio total basado en el peso y la talla
+       def calculate_total_price(self, weight: float, size: str) -> float:
+           ...
+   ```
+
+6. **Translation consistency** - Maintain a consistent vocabulary for Spanish translations throughout the application. Common terms:
+   - User → Usuario
+   - Item → Artículo
+   - Settings → Configuración
+   - Dashboard → Panel de Control
+   - Reports → Reportes
+   - etc.
+
+7. **NEVER mix languages in code** - Do not create variables like `usuarioName` or `getLiquidacionData`. Use purely English identifiers: `userName`, `getSettlementData`.
+
 ## Project Overview
 
 This is a shrimp farming production management system built on the FastAPI Full-Stack Template. The system manages production tracking, feeding schedules, harvest settlements, and multi-company inventory integration for shrimp farming operations.

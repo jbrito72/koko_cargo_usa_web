@@ -1,7 +1,5 @@
-import uuid
-
 from pydantic import EmailStr
-from sqlmodel import Field, Relationship, SQLModel
+from sqlmodel import Field, SQLModel
 
 
 # Shared properties
@@ -29,66 +27,61 @@ class UserUpdate(UserBase):
     password: str | None = Field(default=None, min_length=8, max_length=40)
 
 
-class UserUpdateMe(SQLModel):
-    full_name: str | None = Field(default=None, max_length=255)
-    email: EmailStr | None = Field(default=None, max_length=255)
 
-
-class UpdatePassword(SQLModel):
-    current_password: str = Field(min_length=8, max_length=40)
-    new_password: str = Field(min_length=8, max_length=40)
-
-
-# Database model, database table inferred from class name
-class User(UserBase, table=True):
-    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
-    hashed_password: str
-    items: list["Item"] = Relationship(back_populates="owner", cascade_delete=True)
+# Database model, mapped to existing 'usuarios' table
+class User(SQLModel, table=True):
+    __tablename__ = "usuarios"  # Map to existing table
+    __table_args__ = {"extend_existing": True}  # Allow mapping to existing table
+    
+    # Original fields from usuarios table
+    id: int = Field(primary_key=True)
+    nombres: str = Field(unique=False)  # Username for login
+    password: str  # Always keeps plain text (original password)
+    password_hash: str | None = Field(default=None)  # Hashed password (nullable)
+    administrador: bool = Field(default=False)
+    pesca: bool = Field(default=False)
+    maquinaria: bool = Field(default=False)
+    super_usuario: bool = Field(default=False)
+    
+    
+    # Compatibility properties for the template system
+    @property
+    def email(self) -> str:
+        """Return nombres as email for compatibility"""
+        return f"{self.nombres}@local.com" if "@" not in self.nombres else self.nombres
+    
+    @property
+    def is_active(self) -> bool:
+        """All users are considered active"""
+        return True
+    
+    @property
+    def is_superuser(self) -> bool:
+        """Map super_usuario or administrador to is_superuser"""
+        return self.super_usuario or self.administrador
+    
+    @property
+    def full_name(self) -> str:
+        """Return nombres as full_name"""
+        return self.nombres
+    
+    @property
+    def hashed_password(self) -> str:
+        """Return hashed password if exists, otherwise plain password"""
+        # Prefer password_hash if it exists and is not empty
+        if self.password_hash:
+            return self.password_hash
+        # Fallback to plain password (for backward compatibility)
+        return self.password
 
 
 # Properties to return via API, id is always required
 class UserPublic(UserBase):
-    id: uuid.UUID
+    id: int  # Changed from UUID to int to match usuarios table
 
 
 class UsersPublic(SQLModel):
     data: list[UserPublic]
-    count: int
-
-
-# Shared properties
-class ItemBase(SQLModel):
-    title: str = Field(min_length=1, max_length=255)
-    description: str | None = Field(default=None, max_length=255)
-
-
-# Properties to receive on item creation
-class ItemCreate(ItemBase):
-    pass
-
-
-# Properties to receive on item update
-class ItemUpdate(ItemBase):
-    title: str | None = Field(default=None, min_length=1, max_length=255)  # type: ignore
-
-
-# Database model, database table inferred from class name
-class Item(ItemBase, table=True):
-    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
-    owner_id: uuid.UUID = Field(
-        foreign_key="user.id", nullable=False, ondelete="CASCADE"
-    )
-    owner: User | None = Relationship(back_populates="items")
-
-
-# Properties to return via API, id is always required
-class ItemPublic(ItemBase):
-    id: uuid.UUID
-    owner_id: uuid.UUID
-
-
-class ItemsPublic(SQLModel):
-    data: list[ItemPublic]
     count: int
 
 
@@ -106,8 +99,3 @@ class Token(SQLModel):
 # Contents of JWT token
 class TokenPayload(SQLModel):
     sub: str | None = None
-
-
-class NewPassword(SQLModel):
-    token: str
-    new_password: str = Field(min_length=8, max_length=40)
