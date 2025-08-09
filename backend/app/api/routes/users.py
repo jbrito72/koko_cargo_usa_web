@@ -15,9 +15,7 @@ from app.core.security import get_password_hash, verify_password
 from app.models import (
     Message,
     User,
-    UserCreate,
     UserPublic,
-    UserRegister,
     UsersPublic,
     UserUpdate,
 )
@@ -44,22 +42,6 @@ def read_users(session: SessionDep, skip: int = 0, limit: int = 100) -> Any:
     return UsersPublic(data=users, count=count)
 
 
-@router.post(
-    "/", dependencies=[Depends(get_current_active_superuser)], response_model=UserPublic
-)
-def create_user(*, session: SessionDep, user_in: UserCreate) -> Any:
-    """
-    Create new user.
-    """
-    user = crud.get_user_by_email(session=session, email=user_in.email)
-    if user:
-        raise HTTPException(
-            status_code=400,
-            detail="The user with this email already exists in the system.",
-        )
-
-    user = crud.create_user(session=session, user_create=user_in)
-    return user
 
 
 @router.get("/me", response_model=UserPublic)
@@ -70,20 +52,6 @@ def read_user_me(current_user: CurrentUser) -> Any:
     return current_user
 
 
-@router.post("/signup", response_model=UserPublic)
-def register_user(session: SessionDep, user_in: UserRegister) -> Any:
-    """
-    Create new user without the need to be logged in.
-    """
-    user = crud.get_user_by_email(session=session, email=user_in.email)
-    if user:
-        raise HTTPException(
-            status_code=400,
-            detail="The user with this email already exists in the system",
-        )
-    user_create = UserCreate.model_validate(user_in)
-    user = crud.create_user(session=session, user_create=user_create)
-    return user
 
 
 @router.get("/{user_id}", response_model=UserPublic)

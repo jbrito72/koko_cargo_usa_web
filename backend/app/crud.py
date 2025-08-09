@@ -30,22 +30,22 @@ def update_user(*, session: Session, db_user: User, user_in: UserUpdate) -> Any:
     return db_user
 
 
-def get_user_by_email(*, session: Session, email: str) -> User | None:
-    """Get user by email, ID, or nombres (username)"""
+def get_user_by_username(*, session: Session, username: str) -> User | None:
+    """Get user by ID or nombres (username)"""
     # Check if input is a numeric ID
-    if email.isdigit():
-        statement = select(User).where(User.id == int(email))
+    if username.isdigit():
+        statement = select(User).where(User.id == int(username))
     else:
         # Search by nombres (username)
-        statement = select(User).where(User.nombres == email)
+        statement = select(User).where(User.nombres == username)
     
     session_user = session.exec(statement).first()
     return session_user
 
 
-def authenticate(*, session: Session, email: str, password: str) -> User | None:
+def authenticate(*, session: Session, username: str, password: str) -> User | None:
     """Authenticate user with ID/nombres and password (uses password_hash if exists)"""
-    db_user = get_user_by_email(session=session, email=email)
+    db_user = get_user_by_username(session=session, username=username)
     if not db_user:
         return None
     

@@ -4,8 +4,6 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import { z } from "zod"
 
 import { type UserPublic, UsersService } from "@/client"
-import AddUser from "@/components/Admin/AddUser"
-import { UserActionsMenu } from "@/components/Common/UserActionsMenu"
 import {
   PaginationItems,
   PaginationNextTrigger,
@@ -64,7 +62,6 @@ function UsersTable() {
             <Table.ColumnHeader w="sm">Correo Electrónico</Table.ColumnHeader>
             <Table.ColumnHeader w="sm">Rol</Table.ColumnHeader>
             <Table.ColumnHeader w="sm">Estado</Table.ColumnHeader>
-            <Table.ColumnHeader w="sm">Acciones</Table.ColumnHeader>
           </Table.Row>
         </Table.Header>
         <Table.Body>
@@ -85,12 +82,6 @@ function UsersTable() {
                 {user.is_superuser ? "Superusuario" : "Usuario"}
               </Table.Cell>
               <Table.Cell>{user.is_active ? "Activo" : "Inactivo"}</Table.Cell>
-              <Table.Cell>
-                <UserActionsMenu
-                  user={user}
-                  disabled={currentUser?.id === user.id}
-                />
-              </Table.Cell>
             </Table.Row>
           ))}
         </Table.Body>
@@ -115,11 +106,9 @@ function UsersTable() {
 function Admin() {
   return (
     <Container maxW="full">
-      <Heading size="lg" pt={12}>
+      <Heading size="lg" pt={12} mb={6}>
         Gestión de Usuarios
       </Heading>
-
-      <AddUser />
       <UsersTable />
     </Container>
   )

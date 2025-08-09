@@ -1,29 +1,31 @@
-from pydantic import EmailStr
 from sqlmodel import Field, SQLModel
 
 
 # Shared properties
 class UserBase(SQLModel):
-    email: EmailStr = Field(unique=True, index=True, max_length=255)
+    # Email removed - using nombres/ID for authentication
     is_active: bool = True
     is_superuser: bool = False
     full_name: str | None = Field(default=None, max_length=255)
 
 
 # Properties to receive via API on creation
-class UserCreate(UserBase):
+class UserCreate(SQLModel):
+    nombres: str = Field(max_length=255)  # Username
     password: str = Field(min_length=8, max_length=40)
+    is_superuser: bool = False
+    full_name: str | None = None
 
 
 class UserRegister(SQLModel):
-    email: EmailStr = Field(max_length=255)
+    nombres: str = Field(max_length=255)  # Username instead of email
     password: str = Field(min_length=8, max_length=40)
     full_name: str | None = Field(default=None, max_length=255)
 
 
 # Properties to receive via API on update, all are optional
 class UserUpdate(UserBase):
-    email: EmailStr | None = Field(default=None, max_length=255)  # type: ignore
+    nombres: str | None = Field(default=None, max_length=255)  # Username instead of email
     password: str | None = Field(default=None, min_length=8, max_length=40)
 
 
@@ -45,10 +47,6 @@ class User(SQLModel, table=True):
     
     
     # Compatibility properties for the template system
-    @property
-    def email(self) -> str:
-        """Return nombres as email for compatibility"""
-        return f"{self.nombres}@local.com" if "@" not in self.nombres else self.nombres
     
     @property
     def is_active(self) -> bool:
@@ -76,8 +74,12 @@ class User(SQLModel, table=True):
 
 
 # Properties to return via API, id is always required
-class UserPublic(UserBase):
+class UserPublic(SQLModel):
     id: int  # Changed from UUID to int to match usuarios table
+    nombres: str  # Username
+    is_active: bool = True
+    is_superuser: bool = False
+    full_name: str | None = None
 
 
 class UsersPublic(SQLModel):
@@ -99,3 +101,6 @@ class Token(SQLModel):
 # Contents of JWT token
 class TokenPayload(SQLModel):
     sub: str | None = None
+
+
+# Items functionality has been removed as it's not needed for this system

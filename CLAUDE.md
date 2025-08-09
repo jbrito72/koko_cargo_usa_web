@@ -12,6 +12,73 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 4. **Domain knowledge source** - For understanding shrimp production domain models and their relationships, PROJECT_INDEX.md contains the complete database schema documentation.
 
+## UI/UX Migration Rules - MUST READ
+
+### Migration Philosophy
+This is a **screen-by-screen migration** from a legacy system to a modern stack. You must act as a **Senior UI/UX Designer** with focus on:
+- **Modern, minimalist design** using current best practices
+- **Improved user experience** - don't just copy 1:1, think how to make it better
+- **Progressive enhancement** - suggest improvements while respecting existing workflows
+- **Simple architecture** - avoid over-engineering, keep solutions clean and maintainable
+
+### Migration Process Rules
+
+1. **Database Tables Requirement**
+   - **ALWAYS ASK** which database tables are relevant for each screen/functionality
+   - **NEVER ASSUME** which tables to use based on screen appearance
+   - Wait for explicit confirmation of table names before implementing backend logic
+   - Document table dependencies clearly in component comments
+
+2. **Screen-by-Screen Approach**
+   - Migration will proceed menu by menu, screen by screen
+   - Each migration starts with screenshots of the legacy system
+   - Analyze the old UI to understand user workflows and pain points
+   - Propose modern alternatives that improve the experience
+
+3. **UI/UX Design Principles**
+   - **Minimalist Design**: Clean interfaces with proper whitespace and visual hierarchy
+   - **Consistency**: Use the existing Chakra UI component library consistently
+   - **Responsiveness**: All screens must work on mobile, tablet, and desktop
+   - **Accessibility**: Follow WCAG 2.1 guidelines, proper ARIA labels
+   - **Performance**: Optimize for fast load times and smooth interactions
+   - **User Feedback**: Clear loading states, success messages, and error handling
+
+4. **Improvement Guidelines**
+   When analyzing legacy screens, consider:
+   - **Workflow Optimization**: Can we reduce the number of clicks/steps?
+   - **Data Presentation**: Better ways to visualize information (tables, cards, charts)?
+   - **Form Simplification**: Group related fields, progressive disclosure, smart defaults
+   - **Search & Filters**: Add powerful search and filtering capabilities
+   - **Bulk Operations**: Enable multi-select and batch actions where appropriate
+   - **Keyboard Navigation**: Support power users with keyboard shortcuts
+   - **Context Actions**: Right-click menus, inline editing where it makes sense
+
+5. **Technical Implementation**
+   - **Component Architecture**: Create reusable components, avoid duplication
+   - **State Management**: Use React Query for server state, Zustand for complex client state
+   - **Type Safety**: Leverage TypeScript for all new components
+   - **Testing**: Write tests for critical business logic
+   - **Performance**: Implement lazy loading, pagination, virtual scrolling for large datasets
+   - **Error Boundaries**: Graceful error handling with user-friendly messages
+
+6. **Design System Adherence**
+   - Use existing Chakra UI components as the foundation
+   - Extend with custom components only when necessary
+   - Maintain consistent spacing, colors, and typography
+   - Document any custom design tokens or patterns
+
+7. **Migration Checklist for Each Screen**
+   - [ ] Analyze legacy screenshot and identify improvements
+   - [ ] Confirm database tables with user
+   - [ ] Design modern UI mockup/description
+   - [ ] Implement backend models and endpoints if needed
+   - [ ] Create frontend components with TypeScript
+   - [ ] Add proper loading and error states
+   - [ ] Implement responsive design
+   - [ ] Test on different screen sizes
+   - [ ] Add Spanish translations for all UI text
+   - [ ] Document component usage
+
 ## Language and Code Convention Rules
 
 ### STRICT CODE LANGUAGE REQUIREMENTS
